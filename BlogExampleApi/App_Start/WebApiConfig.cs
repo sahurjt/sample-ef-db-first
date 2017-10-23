@@ -22,6 +22,7 @@ namespace BlogExampleApi
             );
             // support only json response
             config.Formatters.Remove(config.Formatters.XmlFormatter);
+            
         }
     }
 }

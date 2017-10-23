@@ -46,7 +46,7 @@ namespace BlogExampleApi.Controllers
                 log.Trace("No post found");
                 return NotFound();
             }
-
+            
             return Ok(post);
         }
 
