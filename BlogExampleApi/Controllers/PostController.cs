@@ -20,7 +20,7 @@ namespace BlogExampleApi.Controllers
         /// <summary>
         /// Return all post in posts table
         /// </summary>
-        /// <returns></returns>
+        /// <returns>list of post object</returns>
         [HttpGet]
         public IEnumerable<Post> Get()
         {
@@ -29,6 +29,11 @@ namespace BlogExampleApi.Controllers
             return posts;
         }
 
+        /// <summary>
+        /// Get a single post or 404
+        /// </summary>
+        /// <param name="id"> id of given post</param>
+        /// <returns>ok or 404</returns>
         // GET api/<controller>/5
         [ResponseType(typeof(Post))]
         [HttpGet]
@@ -45,8 +50,11 @@ namespace BlogExampleApi.Controllers
             return Ok(post);
         }
 
-
-        // POST api/<controller>
+        /// <summary>
+        /// Add new post record to database
+        /// </summary>
+        /// <param name="value">Post data</param>
+        /// <returns>ok</returns>
         [HttpPost]
         public IHttpActionResult Add(Post value)
         {
@@ -56,6 +64,11 @@ namespace BlogExampleApi.Controllers
             return Ok(value);
         }
 
+        /// <summary>
+        /// Update post with given id
+        /// </summary>
+        /// <param name="new_post">Send post data as url-encoded form</param>
+        /// <returns>always 202</returns>
         [HttpPost]
         [Route("api/post/update")]
         public IHttpActionResult Update(Post new_post)
@@ -70,6 +83,11 @@ namespace BlogExampleApi.Controllers
             return Ok();
         }
 
+        /// <summary>
+        /// Delete Post with this id
+        /// </summary>
+        /// <param name="id">id of post</param>
+        /// <returns>202 or 404</returns>
 
         public IHttpActionResult Delete(int id)
         {
@@ -84,8 +102,5 @@ namespace BlogExampleApi.Controllers
             return Ok();
         }
 
-        //private async Task getData() {
-        //   var a=await  db.SaveChangesAsync();          
-        //}
     }
 }
