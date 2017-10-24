@@ -26,6 +26,7 @@ namespace BlogExampleApi.Controllers
         {
             var posts = db.Posts;
             log.Trace("return list of posts");
+            log.Debug("return list of posts");
             return posts;
         }
 
