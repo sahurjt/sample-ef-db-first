@@ -17,6 +17,8 @@ namespace BlogExampleApi.Controllers
         // database instance to access table 
         private BlogEntities db = new BlogEntities();
 
+        public HttpRequestMessage Request { get; set; }
+
         /// <summary>
         /// Return all post in posts table
         /// </summary>

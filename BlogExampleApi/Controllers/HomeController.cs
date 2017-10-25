@@ -18,7 +18,7 @@ namespace BlogExampleApi.Controllers
                 BaseAddress = new Uri("https://google.co.in")
             };
             string result = c.GetStringAsync("").Result;
-            return result;
+            return "DemoApp";
             
         }
     }
