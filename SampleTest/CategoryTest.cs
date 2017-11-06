@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Web.Http.Results;
 using BlogExampleApi.Interface;
 using FakeItEasy;
+using BlogExampleApi.Models;
 
 namespace SampleTest
 {
@@ -29,12 +30,13 @@ namespace SampleTest
 
             // Act
             IHttpActionResult result = controller.Get();
-            var contentResult = result as OkNegotiatedContentResult<IEnumerable<Category>>;
-            
+            var contentResult = result as OkNegotiatedContentResult<Response>;
+            var data = contentResult.Content.Data as IEnumerable<Category>;
+
             // Assert
             Assert.IsNotNull(contentResult);
-            Assert.AreEqual(1, contentResult.Content.Count());
-            Assert.AreEqual("demo", contentResult.Content.ElementAt(0).title);
+            Assert.AreEqual(1, data.Count());
+            Assert.AreEqual("demo", data.ElementAt(0).title);
 
         }
 
@@ -49,13 +51,14 @@ namespace SampleTest
            
             // Act
             IHttpActionResult result = controller.Get(1);
-            var contentResult = result as OkNegotiatedContentResult<IEnumerable<dynamic>>;
-            System.Console.WriteLine(contentResult.Content.ElementAt(0).title);
+            var contentResult = result as OkNegotiatedContentResult<Response>;
+            var data = contentResult.Content.Data as IEnumerable < dynamic >;
+            System.Console.WriteLine(data.ElementAt(0).title);
             // Assert
             Assert.IsNotNull(contentResult);
-            Assert.AreEqual(1, contentResult.Content.Count());
-            Assert.AreEqual("demo_post", contentResult.Content.ElementAt(0).title);
-            Assert.AreEqual("demo_category", contentResult.Content.ElementAt(0).category_title);
+            Assert.AreEqual(1, data.Count());
+            Assert.AreEqual("demo_post", data.ElementAt(0).title);
+            Assert.AreEqual("demo_category", data.ElementAt(0).category_title);
 
         }
 
@@ -71,11 +74,12 @@ namespace SampleTest
 
             // Act
             IHttpActionResult result = controller.Put(DEMO_CATEGORY);
-            var contentResult = result as OkNegotiatedContentResult<string>;
-
+            var contentResult = result as OkNegotiatedContentResult<Response>;
+            var data = contentResult.Content.Message;
+     
             // Assert
             Assert.IsNotNull(contentResult);
-            Assert.AreEqual("Added New Category", contentResult.Content);
+            Assert.AreEqual("Added new Category", data);
 
         }
 
@@ -90,11 +94,12 @@ namespace SampleTest
 
             // Act
             IHttpActionResult result = controller.Delete(1);
-            var contentResult = result as OkNegotiatedContentResult<string>;
+            var contentResult = result as OkNegotiatedContentResult<Response>;
+            var data = contentResult.Content.Status;
 
             // Assert
             Assert.IsNotNull(contentResult);
-            Assert.AreEqual("Catgory Deleted", contentResult.Content);
+            Assert.AreEqual(Response.MESSAGE_OK, data);
 
         }
 
