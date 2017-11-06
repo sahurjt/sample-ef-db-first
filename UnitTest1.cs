@@ -11,7 +11,9 @@ namespace SampleTest
     [TestClass]
     public class UnitTest1
     {
- 
+        //private BlogEntities db = new BlogEntities();
+        //private static string RES_ID_1 = "{\"Category\":{\"id\":1,\"title\":\"General\"},\"id\":1,\"title\":\"a sample example\",\"detail\":\"this is a good start with entity framework\",\"date_created\":null,\"date_modified\":null,\"author\":\"rajat sahu\",\"category_id\":1}";
+        // test api/post/{id}
         [TestMethod]
         public void GetPostById()
         {

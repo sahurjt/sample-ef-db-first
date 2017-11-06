@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using NLog;
+using BlogExampleApi.Interface;
+using BlogExampleApi.ModelOperation;
+using BlogExampleApi.Models;
 
 namespace BlogExampleApi.Controllers
 {
@@ -14,23 +17,31 @@ namespace BlogExampleApi.Controllers
     public class PostController : ApiController
     {
         Logger log = LogManager.GetCurrentClassLogger();
-        // database instance to access table 
-        private BlogEntities db = new BlogEntities();
 
-        public HttpRequestMessage Request { get; set; }
+        private IPostOperation context;
+        public PostController()
+        {
+            context = new PostOperations();
+        }
+
+        public PostController(IPostOperation postOperation)
+        {
+            context = postOperation;
+        }
+
 
         /// <summary>
         /// Return all post in posts table
         /// </summary>
         /// <returns>list of post object</returns>
         [HttpGet]
-        public IEnumerable<Post> Get()
+        public IHttpActionResult Get()
         {
-            var posts = db.Posts;
+            var posts = context.GetAll();
             log.Trace("return list of posts");
-            log.Debug("return list of posts");
-            return posts;
+            return Ok(new Response { Status = Response.MESSAGE_OK, StatusCode = Response.STATUS_OK, Message = "List of Posts.", Data = posts });
         }
+
 
         /// <summary>
         /// Get a single post or 404
@@ -38,21 +49,23 @@ namespace BlogExampleApi.Controllers
         /// <param name="id"> id of given post</param>
         /// <returns>ok or 404</returns>
         // GET api/<controller>/5
-        [ResponseType(typeof(Post))]
         [HttpGet]
         public IHttpActionResult Get(int id)
         {
-            //var post = db.Posts.Find(id);
-            var post = db.Posts.Where(p => p.id == id).SingleOrDefault();
+            var post = context.Get(id);
             if (post == null)
             {
                 log.Trace("No post found");
                 return NotFound();
             }
-            
-            return Ok(post);
+
+            return Ok(new Response { Status = Response.MESSAGE_OK, StatusCode = Response.STATUS_OK, Message = "Post detail.", Data = post });
         }
 
+        [HttpGet]
+        public IHttpActionResult Get(String data) {
+            return Ok(new Response { Status = Response.MESSAGE_ERROR, StatusCode = Response.STATUS_NOT_FOUND, Message = "Route not supported.", Data =data });
+        }
         /// <summary>
         /// Add new post record to database
         /// </summary>
@@ -61,29 +74,22 @@ namespace BlogExampleApi.Controllers
         [HttpPost]
         public IHttpActionResult Add(Post value)
         {
-            db.Posts.Add(value);
-            db.SaveChanges();
+            context.AddPost(value);
             log.Trace("add values for " + value.title);
-            return Ok(value);
+            return Ok(new Response { Status = Response.MESSAGE_OK, StatusCode = Response.STATUS_OK, Message = "Added Post.", Data = value });
         }
 
         /// <summary>
         /// Update post with given id
         /// </summary>
-        /// <param name="new_post">Send post data as url-encoded form</param>
+        /// <param name="newPost">Send post data as url-encoded form</param>
         /// <returns>always 202</returns>
-        [HttpPost]
-        [Route("api/post/update")]
-        public IHttpActionResult Update(Post new_post)
+        [HttpPatch]
+        public IHttpActionResult Update(Post newPost)
         {
-            var post = db.Posts.Where(p => p.id == new_post.id).SingleOrDefault();
-            if (post != null)
-            {
-                post.title = new_post.title;
-                post.detail = new_post.detail;
-                db.SaveChanges();
-            }
-            return Ok();
+            var result = context.Update(newPost);
+            if (result) return Ok(new Response { Status = Response.MESSAGE_OK, StatusCode = Response.STATUS_OK, Message = "Post Updated.", Data = newPost });
+            else return NotFound();
         }
 
         /// <summary>
@@ -91,19 +97,14 @@ namespace BlogExampleApi.Controllers
         /// </summary>
         /// <param name="id">id of post</param>
         /// <returns>202 or 404</returns>
-
+        [HttpDelete]
         public IHttpActionResult Delete(int id)
         {
-            var post = db.Posts.Where(p => p.id == id).SingleOrDefault();
-            if (post != null)
-            {
-                db.Posts.Remove(post);
-                db.SaveChanges();
-            }
-            
-            else return NotFound();
-            return Ok();
+            var result = context.Delete(id);
+            if (result) Ok(new Response { Status = Response.MESSAGE_OK, StatusCode = Response.STATUS_OK, Message = "Post Deleted." });
+            return Ok(new Response { Status = Response.MESSAGE_ERROR, StatusCode = Response.STATUS_OK, Message = "Can't delete as post not exist or its in use." });
         }
+
 
     }
 }
